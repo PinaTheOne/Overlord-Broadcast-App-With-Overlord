@@ -80,7 +80,7 @@ public class AggregatedStatistics {
         this.averageReliability = (this.statCount*this.averageReliability + stats.averageReliability)/(this.statCount + 1);
         this.averageRMR = (this.statCount*this.averageRMR + stats.averageRMR)/(this.statCount + 1);
         this.msgCount += stats.msgCount;
-        this.nodeCount = (this.statCount*this.nodeCount + stats.nodeCount)/(this.statCount + 1);
+        this.nodeCount = stats.getNodeCount();
         this.statCount++;
     }
 
