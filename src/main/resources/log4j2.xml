@@ -53,6 +53,11 @@
 				additivity="false">
 			<AppenderRef ref="console" />
 		</Logger>
+		<Logger name="Overlord.OverlordManager"
+				level="debug"
+				additivity="false">
+			<AppenderRef ref="console" />
+		</Logger>
 		<!-- 		
 		<Logger name="pt.unl.fct.di.novasys.channel" level="trace" 
 			additivity="true"> 
