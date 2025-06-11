@@ -34,11 +34,16 @@ public class OverlordManager extends GenericProtocol {
     private HashMap<UUID, MessageStatistics> stats;
     public long messageValidity;
 
+    /* Statistics */
+
+    AggregatedStatistics statistics;
+
     private static final Logger logger = LogManager.getLogger(OverlordManager.class);
     public OverlordManager(short moncollectProtoId) {
         super(PROTO_NAME, PROTO_ID);
         this.moncollectProtoId = moncollectProtoId;
         this.messageValidity = DEFAULT_MESSAGE_VALIDITY_TIME_MS; // TODO: Make parameter
+        this.statistics = new AggregatedStatistics(0,0);
     }
 
     @Override
@@ -70,9 +75,7 @@ public class OverlordManager extends GenericProtocol {
     }
 
     public void beginMonitor(){
-        System.out.println("BBBBBBBB");
         if(this.overlord) {
-            System.out.println("CCCCCCCCCCCCC");
             sendRequest(new MonitorRequest(), moncollectProtoId);
         }
     }
@@ -109,7 +112,7 @@ public class OverlordManager extends GenericProtocol {
             // If there are no messages or the first message is not yet mature, return
             if (this.timeline.isEmpty() || !isMature(this.timeline.peek())) {
                 logger.debug("No messages are stable yet ({} entries in queue).", this.timeline.size());
-                if (this.timeline.size() > 0) {
+                if (!this.timeline.isEmpty()) {
                     logger.debug("{} seconds until first report", ((this.timeline.peek().getCreationTime() + (2 * messageValidity)) - System.currentTimeMillis()) / 1000);
                 }
                 return;
@@ -176,7 +179,7 @@ public class OverlordManager extends GenericProtocol {
 
             AggregatedStatistics aggregatedStats = new AggregatedStatistics(start, end,
                     /*this.currentWindow*/1, avgLatency, avgReliability, averageHops, averageRMR, receivedMessages,
-                    duplicateMessages, 0, msgCount, nodeCount);
+                    duplicateMessages, /*0,*/ msgCount, nodeCount);
 
             triggerNotification(new CollectDataNotification(AggregatedStatistics.toByteArray(aggregatedStats)));
     }
@@ -224,29 +227,41 @@ public class OverlordManager extends GenericProtocol {
             msgCount+= s.getMsgCount();
 
             // TODO: What is happening here?
-            rmrAcc += s.getAverageRMR();
+            rmrAcc += (float) s.getAverageRMR();
 
-            reliabilityAcc += s.getAverageReliability();
-            latencyAcc += s.getAverageLatency();
-            hopAcc += s.getAverageHops();
+            reliabilityAcc += (float) s.getAverageReliability();
+            latencyAcc += (float) s.getAverageLatency();
+            hopAcc += (int) s.getAverageHops();
             receivedMessages += s.getReceivedMessages();
-            sentMessages += s.getSentMessages();
+            //sentMessages += s.getSentMessages();
             nodeCount += s.getNodeCount();
 
             // How many times was this message duplicated?
             duplicateMessages += s.getDuplicateMessages();
         }
 
-        assert msgCount > 0;
+        float avgLatency;
+        float avgReliability;
+        float averageHops;
+        float averageRMR;
 
-        float avgLatency = latencyAcc / msgCount;
-        float avgReliability = reliabilityAcc / msgCount;
-        float averageHops = (float) hopAcc / msgCount;
-        float averageRMR = rmrAcc / msgCount;
+        assert msgCount > 0;
+        if(msgCount == 0){
+            avgLatency = 0;
+            avgReliability = 0;
+            averageHops = (float) 0;
+            averageRMR = 0;
+        } else {
+            avgLatency = latencyAcc / msgCount;
+            avgReliability = reliabilityAcc / msgCount;
+            averageHops = (float) hopAcc / msgCount;
+            averageRMR = rmrAcc / msgCount;
+        }
 
         AggregatedStatistics finalAggregatedStats = new AggregatedStatistics(start, end,
                 /*this.currentWindow*/1, avgLatency, avgReliability, averageHops, averageRMR, receivedMessages,
-                duplicateMessages, sentMessages, msgCount, nodeCount);
+                duplicateMessages, /*sentMessages,*/ msgCount, nodeCount);
+
         triggerNotification(new ReceiveAggregatedDataNotification(AggregatedStatistics.toByteArray(finalAggregatedStats)));
     }
 
@@ -260,9 +275,11 @@ public class OverlordManager extends GenericProtocol {
         byte[] b = notif.getData();
         try{
             AggregatedStatistics s = AggregatedStatistics.deserialize(b);
-            logger.info(s.toString());
+            statistics.addNewStats(s);
+            logger.info(statistics.toString());
         } catch (Exception e){
             logger.error("Couldn't deserialize data");
+            e.printStackTrace();
             System.exit(-1);
         }
     }
