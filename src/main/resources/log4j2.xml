@@ -35,12 +35,16 @@
 		<Logger name="tardis.app" level="error" additivity="true">
 			<AppenderRef ref="msglog" />
 		</Logger>
-		<Logger name="tardis.management" level="debug"
+		<Logger name="tardis.management" level="error"
 			additivity="true">
 			<AppenderRef ref="controller" />
 		</Logger>
 		<Logger name="pt.unl.fct.di.novasys.babel.utils.memebership.monitor.AdaptiveReconfigurationMonitor" level="error"
 			additivity="true">
+			<AppenderRef ref="autonomic" />
+		</Logger>
+		<Logger name="pt.unl.fct.di.novasys.babel.utils.memebership.monitor.MembershipMonitor" level="error"
+				additivity="true">
 			<AppenderRef ref="autonomic" />
 		</Logger>
 		<Logger
@@ -49,11 +53,16 @@
 			<AppenderRef ref="console" />
 		</Logger>
 		<Logger name="pt.unl.fct.di.novasys.babel.protocols.overlord.moncollect.MonCollect"
+				level="error"
+				additivity="false">
+			<AppenderRef ref="console" />
+		</Logger>
+		<Logger name="tardis.Overlord.OverlordManager"
 				level="debug"
 				additivity="false">
 			<AppenderRef ref="console" />
 		</Logger>
-		<Logger name="Overlord.OverlordManager"
+		<Logger name="tardis.Overlord.adaptation.RuleEngine"
 				level="debug"
 				additivity="false">
 			<AppenderRef ref="console" />
@@ -65,7 +74,11 @@
 		</Logger>
 		 -->
 		<Logger name="pt.unl.fct.di.novasys.babel.protocols.eagerpush"
-			level="error" additivity="false">
+			level="debug" additivity="false">
+			<AppenderRef ref="console" />
+		</Logger>
+		<Logger name="Overlord.adaptation"
+				level="debug" additivity="false">
 			<AppenderRef ref="console" />
 		</Logger>
 		<Logger name="pt.unl.fct.di.novasys.babel.utils.recordexporter"

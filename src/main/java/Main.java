@@ -9,16 +9,17 @@ import org.apache.logging.log4j.Logger;
 
 import pt.unl.fct.di.novasys.babel.core.Babel;
 import pt.unl.fct.di.novasys.babel.core.GenericProtocol;
+import pt.unl.fct.di.novasys.babel.metrics.exporters.ExporterCollectOptions;
 import pt.unl.fct.di.novasys.babel.protocols.eagerpush.AdaptiveEagerPushGossipBroadcast;
 import pt.unl.fct.di.novasys.babel.protocols.hyparview.HyParView;
 import pt.unl.fct.di.novasys.babel.protocols.overlord.moncollect.MonCollect;
 import pt.unl.fct.di.novasys.babel.utils.NetworkingUtilities;
 import pt.unl.fct.di.novasys.babel.utils.memebership.monitor.AdaptiveReconfigurationMonitor;
 import pt.unl.fct.di.novasys.babel.utils.memebership.monitor.MembershipMonitor;
-import pt.unl.fct.di.novasys.babel.utils.recordexporter.RecordExporter;
 import pt.unl.fct.di.novasys.babel.utils.visualization.VisualizationProtocol;
 import pt.unl.fct.di.novasys.network.data.Host;
 import tardis.Overlord.OverlordManager;
+import tardis.Overlord.adaptation.RuleEngine;
 import tardis.app.DataDisseminationApp;
 import tardis.management.Controller;
 
@@ -37,7 +38,7 @@ public class Main {
 	// argument)
 	private static final String DEFAULT_CONF = "tardis.conf";
 
-	@SuppressWarnings("unused")
+	@SuppressWarnings({"FieldCanBeLocal", "unused"}) // TODO: Maybe check on this
 	private final DataDisseminationApp app;
 
 	public Main(DataDisseminationApp app) {
@@ -58,6 +59,9 @@ public class Main {
 
 		String address = null;
 
+		boolean overlord = props.containsKey("Overlord") && Boolean.parseBoolean(props.getProperty("Overlord"));
+
+
 		if (props.containsKey(Babel.PAR_DEFAULT_INTERFACE))
 			address = NetworkingUtilities.getAddress(props.getProperty(Babel.PAR_DEFAULT_INTERFACE));
 		else if (props.containsKey(Babel.PAR_DEFAULT_ADDRESS))
@@ -68,7 +72,7 @@ public class Main {
 		if (props.containsKey(Babel.PAR_DEFAULT_PORT))
 			port = Integer.parseInt(props.getProperty(Babel.PAR_DEFAULT_PORT));
 
-		Host h = null;
+		Host h;
 
 		if (address == null || port == -1) {
 			System.err.println("Configuration must contain one of '" + Babel.PAR_DEFAULT_INTERFACE + "' or '"
@@ -82,7 +86,6 @@ public class Main {
 
 		HyParView membershipProtocol = new HyParView("channel.hyparview", props, h);
 
-		// TODO: Isto serve para que? (ambos)
 		MembershipMonitor mm = new MembershipMonitor();
 
 		AdaptiveReconfigurationMonitor arm = new AdaptiveReconfigurationMonitor();
@@ -91,7 +94,7 @@ public class Main {
 		AdaptiveEagerPushGossipBroadcast bcast = new AdaptiveEagerPushGossipBroadcast("channel.gossip", props,
 				gossipHost);
 
-		Controller controller = new Controller(props, h);
+		Controller controller = new Controller(h);
 
 		DataDisseminationApp app = new DataDisseminationApp(gossipHost);
 
@@ -100,42 +103,40 @@ public class Main {
 			System.exit(1);
 		}
 
-		InetAddress monitorAddress = InetAddress.getByName(props.getProperty("Metrics.monitor.address"));
-		int monitorPort = Integer.parseInt(props.getProperty("Metrics.monitor.port"));
-
-		Host monitorHost = new Host(monitorAddress, monitorPort);
+		ExporterCollectOptions options = new ExporterCollectOptions.Builder()
+				.protocolsToCollect(AdaptiveEagerPushGossipBroadcast.PROTOCOL_ID)
+				.protocolsToCollect(OverlordManager.PROTO_ID)
+				.build();
 
 		//Record exporter exports metrics to the monitor host (there is only one metrics monitor)
-		Host recordExporterHost = new Host(h.getAddress(), h.getPort() + 22);
-		RecordExporter recordExporter = new RecordExporter(recordExporterHost, monitorHost);
-
 		VisualizationProtocol visualizationProtocol = null;
 		if (props.containsKey("Visualization") && props.getProperty("Visualization").equals("true")) {
 			Host visualizationHost = new Host(h.getAddress(), h.getPort() + 23);
 			visualizationProtocol = new VisualizationProtocol(visualizationHost);
 		}
 
+		//************** MON-COLLECT - OVERLORD MANAGER - RULE ENGINE **************
+
 		MonCollect monCollect = null;
 		OverlordManager overlordManager = null;
+		RuleEngine ruleEngine = null;
 
-		if(props.containsKey("MON-Collect.Channel.port")) {
+		if (props.containsKey("MON-Collect.Channel.port")) {
 			logger.debug("Overlord is enabled");
 			//InetAddress moncollectAddress = InetAddress.getByName(props.getProperty("MON-Collect.Channel.address"));
 			int moncollectPort = Integer.parseInt(props.getProperty("MON-Collect.Channel.port"));
 
 			Host monCollectHost = new Host(h.getAddress(), moncollectPort);
-			// TODO: Ver isto
-			System.out.println(monCollectHost);
 			monCollect = new MonCollect(monCollectHost, OverlordManager.PROTO_ID);
-			overlordManager = new OverlordManager(MonCollect.PROTO_ID);
+			overlordManager = new OverlordManager(h, MonCollect.PROTO_ID, AdaptiveEagerPushGossipBroadcast.PROTOCOL_ID); // TODO: Mudar isto;
+			if (overlord)
+				ruleEngine = new RuleEngine(h);
 		}
+		//**************************************************************************
 
 		// Solve the dependency between the data dissemination app and the broadcast
 		// protocol if omitted from the config
-		props.putIfAbsent(DataDisseminationApp.PAR_BCAST_PROTOCOL_ID,
-		AdaptiveEagerPushGossipBroadcast.PROTOCOL_ID + "");
-
-
+		props.putIfAbsent(DataDisseminationApp.PAR_BCAST_PROTOCOL_ID, AdaptiveEagerPushGossipBroadcast.PROTOCOL_ID + "");
 
 		List<GenericProtocol> protocols = new LinkedList<>();
 		protocols.add(membershipProtocol);
@@ -148,6 +149,7 @@ public class Main {
 		protocols.add(app);
 		protocols.add(monCollect);
 		protocols.add(overlordManager);
+		protocols.add(ruleEngine);
 
 
 		for (GenericProtocol protocol : protocols) {
@@ -165,19 +167,12 @@ public class Main {
 		System.out.println("Setup is complete.");
 
 		babel.start();
-		System.out.println("System is running.");
 
-		System.out.println("Asking if I am Overlord");
-		if(props.containsKey("Overlord") && Boolean.parseBoolean(props.getProperty("Overlord"))) {
-			System.out.println("This is the Overlord, beggining Monitor in 60 secconds");
-			//for (; ; ) {
-			//	Thread.sleep(60000); // 60 secconds
-			//	System.out.println("AAAAAA");
-			//	assert overlordManager != null;
-			//	overlordManager.beginMonitor();
-			//}
+		if (props.containsKey("Overlord") && Boolean.parseBoolean(props.getProperty("Overlord"))) {
+			System.out.println("System is running as OVERLORD.");
+			//commandInput(overlordManager);
+		} else {
+			System.out.println("System is running.");
 		}
-
 	}
-
 }

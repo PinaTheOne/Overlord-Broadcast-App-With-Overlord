@@ -192,8 +192,6 @@ public class AggregatedStatistics {
                           Duplicate Messages: %d,
                           Average RMR: %.3f,
                           Global Duplication Rate: %.2f%%,
-                          """+//Sent Messages: %d,
-                          """
                           Average Hops: %.2f,
                           Average Latency: %.2f ms,
                           Average Reliability: %.2f%%,

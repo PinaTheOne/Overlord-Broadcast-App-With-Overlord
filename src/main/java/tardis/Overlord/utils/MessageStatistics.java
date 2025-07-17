@@ -21,7 +21,7 @@ public class MessageStatistics implements Comparable<MessageStatistics> {
         this.latency = deliveryTime - creationTime;
         this.highestHop = hopCount;
         this.reliability = 0;
-        this.delivered = new HashSet<Host>();
+        this.delivered = new HashSet<>();
         this.delivered.add(receiver);
         this.receiveCount = 1;
     }
