@@ -1,5 +1,7 @@
 package tardis.Overlord;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import pt.unl.fct.di.novasys.babel.exceptions.HandlerRegistrationException;
 import pt.unl.fct.di.novasys.babel.metrics.NodeSample;
 import pt.unl.fct.di.novasys.babel.protocols.overlord.moncollect.notifications.CollectNotification;
@@ -8,6 +10,7 @@ import tardis.Overlord.adaptation.RuleEngine;
 import tardis.Overlord.adaptation.requests.EvaluateConditionsRequest;
 import tardis.Overlord.adaptation.requests.RegisterRuleRequest;
 import tardis.Overlord.adaptation.rules.ProtoRule;
+import tardis.Overlord.requests.StartOverlordRequest;
 import tardis.Overlord.timers.TriggerOverlordTimer;
 
 import java.util.Map;
@@ -15,6 +18,8 @@ import java.util.Properties;
 import java.util.Set;
 
 public abstract class OverlordManager extends OverlordNodeManager {
+
+    public static final Logger logger = LogManager.getLogger(OverlordManager.class);
 
     public final static String PAR_COLLECT_PERIOD = "Overlord.TriggerPeriodMs";
     public final static String PAR_COLLECT_TIMER = "Overlord.TriggerTimer";
@@ -35,6 +40,11 @@ public abstract class OverlordManager extends OverlordNodeManager {
     public void init(Properties props){
         super.init(props);
         try {
+
+            /* PROPERTIES */
+
+            registerRequestHandler(StartOverlordRequest.PROTOCOL_ID, this::uponStartOverlordRequest);
+
             // For receiving collected metrics from MON-Collect's result
             subscribeNotification(CollectNotification.NOTIFICATION_ID, this::uponCollectNotification_real);
 
@@ -43,19 +53,21 @@ public abstract class OverlordManager extends OverlordNodeManager {
                 this.metricCollectionPeriod = Long.parseLong(props.getProperty(PAR_COLLECT_PERIOD));
             else
                 this.metricCollectionPeriod = DEFAULT_COLLECT_PERIOD;
+            logger.debug("  Overlord Trigger Period: {}", this.metricCollectionPeriod);
 
-            // For selecting if MON-Collect is triggered manually or by a timer TODO: Add a manual trigger for MON-Collect
+            // For selecting if MON-Collect is triggered manually or by a timer
             if((props.containsKey(PAR_COLLECT_TIMER)
                     && Boolean.parseBoolean(props.getProperty(PAR_COLLECT_TIMER))
             || DEFAULT_COLLECT_TIMER_VALUE)) {
                 registerTimerHandler(TriggerOverlordTimer.TIMER_ID, this::uponOverlordTimer);
                 setupPeriodicTimer(new TriggerOverlordTimer(), this.metricCollectionPeriod, this.metricCollectionPeriod);
             }
+            logger.debug("  Overlord Timed Trigger: {}", props.containsKey(PAR_COLLECT_TIMER) && Boolean.parseBoolean(props.getProperty(PAR_COLLECT_TIMER))  || DEFAULT_COLLECT_TIMER_VALUE);
         } catch (HandlerRegistrationException e){
             logger.error("Could not Register Handler: {}", e.getMessage());
         }
 
-        // RULES
+        /* RULES */
 
         // For rule registration. You are supposed to register your defined rules using the register rules method.
         logger.info("Rule Registration:");
@@ -100,17 +112,33 @@ public abstract class OverlordManager extends OverlordNodeManager {
     /* Real Requests - DO NOT TOUCH */
 
     private void uponCollectNotification_real(CollectNotification notification, short protoId) {
+        logger.info("Received Collect Notification from {}.", protoId);
         Map<String, NodeSample> samples = deserializeSampleMap(notification.getData());
-        logger.info("Sending Collected Metrics to Rule Engine for Evaluation");
-        sendRequest(new EvaluateConditionsRequest(uponCollectNotification(samples)), RuleEngine.PROTO_ID);
+        if(samples.isEmpty())
+            logger.warn("Collected sample map is empty! Ignoring Notificaiton");
+        else {
+            OverlordNodeManager.logNodeSampleMap("Collected Sample Map:", samples);
+            logger.info("Sending Collected Metrics to Rule Engine for Evaluation");
+            sendRequest(new EvaluateConditionsRequest(uponCollectNotification(samples)), RuleEngine.PROTO_ID);
+        }
     }
 
     /* ********************* *
      * *** Overlord Timer ** *
      * ********************* */
 
+    private void uponStartOverlordRequest(StartOverlordRequest req, short protoID){
+        logger.info("Received a Start Overlord Request from {}", protoID);
+        startOverlord();
+    }
+
     private void uponOverlordTimer(TriggerOverlordTimer timer, long timerId) {
         logger.debug("Timer was triggered. Starting overlord and sending new request to MON-Collect");
+        startOverlord();
+    }
+
+    private void startOverlord(){
+        logger.info("Starting Overlord...");
         sendRequest(new MonitorRequest(), moncollectProtoId);
     }
 

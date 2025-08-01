@@ -30,6 +30,7 @@ public abstract class OverlordNodeManager extends Monitor {
     // Protocol Information
     public static final String PROTO_NAME = "OverlordManager";
     public static final short PROTO_ID = 1100;
+    public static final String DEFAULT_EXPORTER_NAME = "OverlordNodeExporter";
     private ProtocolExporterHelper protocolExporterHelper;
     protected long metricCollectionPeriod;
     protected long messageValidity;
@@ -38,22 +39,28 @@ public abstract class OverlordNodeManager extends Monitor {
     public OverlordNodeManager(short moncollectProtoId){
         super(PROTO_NAME, PROTO_ID);
         this.moncollectProtoId = moncollectProtoId;
-        this.protocolExporterHelper = new ProtocolExporterHelper.Builder("OverlordNodeExporter").build();
+        this.protocolExporterHelper = new ProtocolExporterHelper.Builder(DEFAULT_EXPORTER_NAME).build();
     }
 
     @Override
     public void init(Properties props) {
 
+        /* PROPERTIES */
+
+        logger.debug("Logging loaded properties:");
+
         if(props.containsKey(OverlordManager.PAR_MESSAGE_VALIDITY_TIME_MS))
             this.messageValidity = Long.parseLong(props.getProperty(OverlordManager.PAR_MESSAGE_VALIDITY_TIME_MS));
         else
             this.messageValidity = OverlordManager.DEFAULT_MESSAGE_VALIDITY_TIME_MS;
+        logger.debug("  Message Validity: {}", this.messageValidity);
 
         // For reception of reconfiguration of parameters
         try {
             registerRequestHandler(MonitorDataRequest.REQUEST_ID, this::uponMonitorDataRequest_real);
             registerRequestHandler(AggregateDataRequest.REQUEST_ID, this::uponAggregateDataRequest_real);
             subscribeNotification(BroadcastDelivery.NOTIFICATION_ID, this::uponBroadcastDelivery);
+            logger.debug("All Handlers Registered Successfully.");
         } catch (HandlerRegistrationException e){
             logger.error("Could not Register Handler: {}", e.getMessage());
         }
@@ -65,40 +72,16 @@ public abstract class OverlordNodeManager extends Monitor {
 
     protected void setExporterOptions(ExporterCollectOptions opts){
         this.protocolExporterHelper = new ProtocolExporterHelper.Builder("OverlordNodeExporter").exporterCollectOptions(opts).build();
+        logger.info("Loaded new exporter options");
+        logger.debug(opts.toString());
     }
-
-    protected ProtocolExporterHelper getProtocolExporter(){ return this.protocolExporterHelper; }
-
-    /* ******************************** *
-     * ***** PARAMETER ADAPTATION ***** *
-     * ******************************** */
 
     /**
-     * Used to receive fanout order changes. It receives every message, and if it contains a new fanout message
-     * changes the fanout value to the new one in the broadcast algorithm.
-     * @param n Delivered message (that contains a ChangeBroadcastFanoutMessage if it is for this protocol).
-     * @param proto The ID of the protocol that delivered the message.
+     * Use this to get the exporter object. It will be needed to collect the necessary metrics (Example:
+     * using protocolExporterHelper.collectAllMetrics()).
+     * @return The Protocol Exporter Helper object
      */
-    private void uponBroadcastDelivery(BroadcastDelivery n, short proto) {
-        logger.info("Received a Broadcast Delivery from protocol: {}", proto);
-        List<Pair<Reconfigure, Short>> reconfigures;
-        // Ignore message if message can't be decoded
-        try {
-            reconfigures = ReconfigurationsContainer.fromByteArray(n.getPayload());
-            logger.debug("Delivered Message is a Reconfiguration List, proceeding with the reconfigurations");
-        } catch (IOException | ClassNotFoundException e) {
-            // Purposefully not dealing with the exception
-            // Assuming it means the message was not for me
-            logger.debug("Delivered Message is not for me, ignoring it...");
-            return;
-        }
-        logger.info("Sending Reconfigurations:");
-        int i = 0;
-        for(Pair<Reconfigure, Short> r : reconfigures){
-            logger.info("   {} - Reconfiguration {} to protocol {}", i++, r.getValue0(), r.getValue1());
-            sendRequest(r.getValue0(), r.getValue1());
-        }
-    }
+    protected ProtocolExporterHelper getProtocolExporter(){ return this.protocolExporterHelper; }
 
     /* ************************************************* *
      * ****** METRICS AND MON-COLLECT INTERACTION ****** *
@@ -131,24 +114,72 @@ public abstract class OverlordNodeManager extends Monitor {
 
     /* Real Requests - DO NOT TOUCH */
 
-    private void uponMonitorDataRequest_real(MonitorDataRequest req, short protoID){
-        logger.info("Received Monitor Data Request");
+    private void uponMonitorDataRequest_real(MonitorDataRequest req, short protoID) {
+        logger.info("Received Monitor Data Request from {}.", protoID);
         Map<String, NodeSample> data = this.uponMonitorDataRequest();
-        triggerNotification(new CollectDataNotification(serializeSampleMap(data)));
+        if (data.isEmpty())
+            logger.warn("Monitored Data is Empty, sending an empty map back.");
+        else {
+            logNodeSampleMap("Monitored Data:", data);
+            triggerNotification(new CollectDataNotification(serializeSampleMap(data)));
+        }
     }
 
     private void uponAggregateDataRequest_real(AggregateDataRequest req, short protoID){
+        logger.info("Received Aggregation Request from {}.", protoID);
         List<byte[]> reqList = req.getData();
         List<Map<String, NodeSample>> sampleList = new ArrayList<>();
-        for(byte[] b : reqList)
-            sampleList.add(deserializeSampleMap(b));
-        logger.info("Received Aggregation Request");
+        if(req.getData().isEmpty())
+            logger.warn("List of samples is empty, sending and empty list back.");
+        else {
+            logger.debug("List of Data to Aggregate:");
+            int i = 0;
+            for (byte[] b : reqList) {
+                Map<String, NodeSample> sample = deserializeSampleMap(b);
+                sampleList.add(sample);
+                if(logger.isDebugEnabled())
+                    logNodeSampleMap(" "+ i++ +":", sample);
+            }
+        }
         Map<String, NodeSample> data = this.uponAggregateDataRequest(sampleList);
+        logNodeSampleMap("Aggregated Data:", data);
         triggerNotification(new ReceiveAggregatedDataNotification(serializeSampleMap(data)));
     }
 
+    /* ******************************** *
+     * ***** PARAMETER ADAPTATION ***** *
+     * ******************************** */
+
+    /**
+     * Used to receive fanout order changes. It receives every message, and if it contains a new fanout message
+     * changes the fanout value to the new one in the broadcast algorithm.
+     * @param n Delivered message (that contains a ChangeBroadcastFanoutMessage if it is for this protocol).
+     * @param proto The ID of the protocol that delivered the message.
+     */
+    private void uponBroadcastDelivery(BroadcastDelivery n, short proto) {
+        logger.debug("Received a Broadcast Delivery from protocol: {}", proto);
+        List<Pair<Reconfigure, Short>> reconfigures;
+        // Ignore message if message can't be decoded
+        try {
+            reconfigures = ReconfigurationsContainer.fromByteArray(n.getPayload());
+            logger.debug("Delivered Message is a Reconfiguration List, proceeding with the reconfigurations");
+        } catch (IOException | ClassNotFoundException e) {
+            // Purposefully not dealing with the exception
+            // Assuming it means the message was not for me
+            logger.debug("Delivered Message is not for me, ignoring it...");
+            return;
+        }
+        logger.info("Sending Reconfigurations to the appropriate protocols:");
+        logger.debug("Reconfiguration List:");
+        int i = 0;
+        for(Pair<Reconfigure, Short> r : reconfigures){
+            logger.debug("   {} - Reconfiguration {} to protocol {}", i++, r.getValue0(), r.getValue1());
+            sendRequest(r.getValue0(), r.getValue1());
+        }
+    }
+
     /* ***************************** *
-     * ******** SAMPLE MAPS ******** *
+     * *** SERIALIZATION HELPERS *** *
      * ***************************** */
 
     public static byte[] serializeSampleMap(Map<String, NodeSample> aggregatedData) {
@@ -179,5 +210,15 @@ public abstract class OverlordNodeManager extends Monitor {
             map.put(h, data);
         }
         return map;
+    }
+
+    protected static void logNodeSampleMap(String msg, Map<String, NodeSample> data) {
+        logger.debug(msg);
+        if (logger.isDebugEnabled()) {
+            logger.debug("Monitored Data:");
+            for (String s : data.keySet()) {
+                logger.debug("  {} - {}", s, data.get(s));
+            }
+        }
     }
 }
