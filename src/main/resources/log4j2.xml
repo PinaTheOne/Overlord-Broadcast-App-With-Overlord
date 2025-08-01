@@ -60,12 +60,12 @@
 			<AppenderRef ref="console" />
 		</Logger>
 		<Logger name="tardis.Overlord.OverlordManager"
-				level="debug"
+				level="warn"
 				additivity="false">
 			<AppenderRef ref="console" />
 		</Logger>
 		<Logger name="tardis.Overlord.OverlordNodeManager"
-				level="debug"
+				level="warn"
 				additivity="false">
 			<AppenderRef ref="console" />
 		</Logger>

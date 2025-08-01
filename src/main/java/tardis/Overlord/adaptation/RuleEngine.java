@@ -32,19 +32,19 @@ public class RuleEngine extends GenericProtocol {
         super(PROTO_NAME, PROTO_ID);
         this.registeredRules = new HashMap<>();
         this.myself =  myself;
-        try {
-            registerRequestHandler(RegisterRuleRequest.REQUEST_ID, this::uponRegisterRuleRequest);
-            registerRequestHandler(UnregisterRuleRequest.REQUEST_ID, this::uponUnregisterRuleRequest);
-            registerRequestHandler(EvaluateConditionsRequest.REQUEST_ID, this::uponEvaluateConditionsRequest);
-        } catch (HandlerRegistrationException e) {
-            logger.error("Couldn't Register Request Handler! Exiting...", e);
-            System.exit(1);
-        }
     }
 
     @Override
     public void init(Properties props) {
-        // Nothing yet
+        try {
+            registerRequestHandler(RegisterRuleRequest.REQUEST_ID, this::uponRegisterRuleRequest);
+            registerRequestHandler(UnregisterRuleRequest.REQUEST_ID, this::uponUnregisterRuleRequest);
+            registerRequestHandler(EvaluateConditionsRequest.REQUEST_ID, this::uponEvaluateConditionsRequest);
+            logger.debug("Registered all handlers successfully.");
+        } catch (HandlerRegistrationException e) {
+            logger.error("Couldn't Register Request Handler! Exiting...", e);
+            System.exit(1);
+        }
     }
 
     /* ********************* *
@@ -52,17 +52,17 @@ public class RuleEngine extends GenericProtocol {
      * ********************* */
 
     private void uponRegisterRuleRequest(RegisterRuleRequest req, short protoID) {
-        logger.info("Received RegisterRuleRequest from protocol {}", protoID);
+        logger.info("Received Register Rule Request from {}", protoID);
         registerRule(req.getRule());
     }
 
     private void uponUnregisterRuleRequest(UnregisterRuleRequest req, short protoID){
-        logger.info("Received EvaluateConditionsRequest from protocol {}", protoID);
+        logger.info("Received Unregister RuleRequest from {}", protoID);
         unregisterRule(req.getID());
     }
 
     private void uponEvaluateConditionsRequest(EvaluateConditionsRequest req, short protoID) {
-        logger.info("Received EvaluateConditionsRequest from protocol {}", protoID);
+        logger.info("Received Evaluate Conditions Request from {}", protoID);
         evaluateRules(req.getSamples());
     }
 
@@ -105,7 +105,7 @@ public class RuleEngine extends GenericProtocol {
         }
         if (logger.isDebugEnabled()) {
             logger.debug("Reconfigurations is not empty, broadcasting them.");
-            logger.debug("Reconfigurations contains:");
+            logger.debug("Reconfigurations List:");
             int i = 0;
             for (Pair<Reconfigure, Short> pair : fullReconfigurations)
                 logger.debug("  {}: {} For Protocol with ID: {}", i++, pair.getValue0(), pair.getValue1());
@@ -117,22 +117,22 @@ public class RuleEngine extends GenericProtocol {
      * * RULE REGISTRATION * *
      * ********************* */
 
-    private void registerRule(ProtoRule rule) {
-        logger.debug("Registering Rule {}", rule.toString());
+    private void registerRule(ProtoRule rule){
+        logger.debug("Registering Rule {}.", rule.toString());
         if(registeredRules.containsKey(rule.getId())) {
-            logger.error("Rule {} is already registered {}", rule.getId(), registeredRules.get(rule.getId()));
-            logger.error("The rule you are trying to register is: {}", rule.toString());
-        } else {
-            registeredRules.put(rule.getId(), rule);
+            logger.warn("Rule {} is already registered {}.", rule.getId(), registeredRules.get(rule.getId()));
+            logger.warn("The rule you are trying to register is: {}.", rule.toString());
         }
+        registeredRules.put(rule.getId(), rule);
+        logger.debug("Successfully Registered rule {}-{}: {}.", rule.getId(), rule.getName(), rule.getDescription());
     }
 
     private void unregisterRule(short id) {
-        logger.debug("Removing Rule {}", id);
+        logger.debug("Removing Rule {}.", id);
         ProtoRule r = registeredRules.remove(id);
         if (r == null)
-            logger.error("Rule {} does not exist, and therefore cannot be unregistered", id);
+            logger.error("Rule {} does not exist, and therefore cannot be unregistered.", id);
         else
-            logger.info("Successfully unregistered Rule {}", r.toString());
+            logger.info("Successfully unregistered Rule {}.", r.toString());
     }
 }
