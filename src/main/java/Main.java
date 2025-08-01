@@ -128,7 +128,7 @@ public class Main {
 			monCollect = new MonCollect(monCollectHost, OverlordManager.PROTO_ID);
 			if (overlord) {
 				overlordClass = new Overlord(h, MonCollect.PROTO_ID, AdaptiveEagerPushGossipBroadcast.PROTOCOL_ID);
-				ruleEngine = new RuleEngine(h);
+				ruleEngine = new RuleEngine(h, AdaptiveEagerPushGossipBroadcast.PROTOCOL_ID);
 			} else {
 				overlordNode = new OverlordNode(h, MonCollect.PROTO_ID);
 			}
