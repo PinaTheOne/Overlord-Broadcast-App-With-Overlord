@@ -1,4 +1,4 @@
-package tardis.Overlord;
+package pt.unl.fct.di.novasys.babel.protocols.overlord;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -6,12 +6,12 @@ import pt.unl.fct.di.novasys.babel.exceptions.HandlerRegistrationException;
 import pt.unl.fct.di.novasys.babel.metrics.NodeSample;
 import pt.unl.fct.di.novasys.babel.protocols.overlord.moncollect.notifications.CollectNotification;
 import pt.unl.fct.di.novasys.babel.protocols.overlord.moncollect.requests.MonitorRequest;
-import tardis.Overlord.adaptation.RuleEngine;
-import tardis.Overlord.adaptation.requests.EvaluateConditionsRequest;
-import tardis.Overlord.adaptation.requests.RegisterRuleRequest;
-import tardis.Overlord.adaptation.rules.ProtoRule;
-import tardis.Overlord.requests.StartOverlordRequest;
-import tardis.Overlord.timers.TriggerOverlordTimer;
+import pt.unl.fct.di.novasys.babel.protocols.overlord.adaptation.RuleEngine;
+import pt.unl.fct.di.novasys.babel.protocols.overlord.adaptation.requests.EvaluateConditionsRequest;
+import pt.unl.fct.di.novasys.babel.protocols.overlord.adaptation.requests.RegisterRuleRequest;
+import pt.unl.fct.di.novasys.babel.protocols.overlord.adaptation.rules.ProtoRule;
+import pt.unl.fct.di.novasys.babel.protocols.overlord.requests.StartOverlordRequest;
+import pt.unl.fct.di.novasys.babel.protocols.overlord.timers.TriggerOverlordTimer;
 
 import java.util.Map;
 import java.util.Properties;

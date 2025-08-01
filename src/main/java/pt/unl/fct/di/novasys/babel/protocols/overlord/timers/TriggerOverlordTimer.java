@@ -1,4 +1,4 @@
-package tardis.Overlord.timers;
+package pt.unl.fct.di.novasys.babel.protocols.overlord.timers;
 
 import pt.unl.fct.di.novasys.babel.generic.ProtoTimer;
 

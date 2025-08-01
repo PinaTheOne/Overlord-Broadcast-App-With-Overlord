@@ -1,4 +1,4 @@
-package tardis.Overlord.adaptation.requests;
+package pt.unl.fct.di.novasys.babel.protocols.overlord.adaptation.requests;
 
 import pt.unl.fct.di.novasys.babel.generic.ProtoRequest;
 

@@ -59,17 +59,17 @@
 				additivity="false">
 			<AppenderRef ref="console" />
 		</Logger>
-		<Logger name="tardis.Overlord.OverlordManager"
+		<Logger name="pt.unl.fct.di.novasys.babel.protocols.overlord.OverlordManager"
 				level="warn"
 				additivity="false">
 			<AppenderRef ref="console" />
 		</Logger>
-		<Logger name="tardis.Overlord.OverlordNodeManager"
+		<Logger name="pt.unl.fct.di.novasys.babel.protocols.overlord.OverlordNodeManager"
 				level="warn"
 				additivity="false">
 			<AppenderRef ref="console" />
 		</Logger>
-		<Logger name="tardis.Overlord.adaptation.RuleEngine"
+		<Logger name="pt.unl.fct.di.novasys.babel.protocols.overlord.adaptation.RuleEngine"
 				level="debug"
 				additivity="false">
 			<AppenderRef ref="console" />

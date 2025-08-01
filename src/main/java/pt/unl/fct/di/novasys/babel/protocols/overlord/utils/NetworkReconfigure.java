@@ -1,7 +1,7 @@
-package tardis.Overlord.utils;
+package pt.unl.fct.di.novasys.babel.protocols.overlord.utils;
 
 import pt.unl.fct.di.novasys.babel.core.adaptive.requests.Reconfigure;
-import tardis.Overlord.OverlordManager;
+import pt.unl.fct.di.novasys.babel.protocols.overlord.OverlordManager;
 
 import java.io.Serial;
 import java.io.Serializable;

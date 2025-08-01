@@ -1,4 +1,4 @@
-package tardis.Overlord.utils;
+package pt.unl.fct.di.novasys.babel.protocols.overlord.utils;
 
 import org.javatuples.Pair;
 import pt.unl.fct.di.novasys.babel.core.adaptive.requests.Reconfigure;

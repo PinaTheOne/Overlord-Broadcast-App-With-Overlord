@@ -1,4 +1,4 @@
-package tardis.Overlord.adaptation;
+package pt.unl.fct.di.novasys.babel.protocols.overlord.adaptation;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -10,12 +10,12 @@ import pt.unl.fct.di.novasys.babel.metrics.NodeSample;
 import pt.unl.fct.di.novasys.babel.protocols.dissemination.requests.BroadcastRequest;
 import pt.unl.fct.di.novasys.babel.protocols.eagerpush.AdaptiveEagerPushGossipBroadcast;
 import pt.unl.fct.di.novasys.network.data.Host;
-import tardis.Overlord.OverlordManager;
-import tardis.Overlord.adaptation.requests.EvaluateConditionsRequest;
-import tardis.Overlord.adaptation.requests.RegisterRuleRequest;
-import tardis.Overlord.adaptation.requests.UnregisterRuleRequest;
-import tardis.Overlord.adaptation.rules.ProtoRule;
-import tardis.Overlord.utils.ReconfigurationsContainer;
+import pt.unl.fct.di.novasys.babel.protocols.overlord.OverlordManager;
+import pt.unl.fct.di.novasys.babel.protocols.overlord.adaptation.requests.EvaluateConditionsRequest;
+import pt.unl.fct.di.novasys.babel.protocols.overlord.adaptation.requests.RegisterRuleRequest;
+import pt.unl.fct.di.novasys.babel.protocols.overlord.adaptation.requests.UnregisterRuleRequest;
+import pt.unl.fct.di.novasys.babel.protocols.overlord.adaptation.rules.ProtoRule;
+import pt.unl.fct.di.novasys.babel.protocols.overlord.utils.ReconfigurationsContainer;
 // Java Util
 import java.util.Map;
 import java.util.HashMap;

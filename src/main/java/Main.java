@@ -18,9 +18,9 @@ import pt.unl.fct.di.novasys.babel.utils.memebership.monitor.MembershipMonitor;
 import pt.unl.fct.di.novasys.babel.utils.visualization.VisualizationProtocol;
 import pt.unl.fct.di.novasys.network.data.Host;
 import tardis.Overlord.Overlord;
-import tardis.Overlord.OverlordManager;
+import pt.unl.fct.di.novasys.babel.protocols.overlord.OverlordManager;
 import tardis.Overlord.OverlordNode;
-import tardis.Overlord.adaptation.RuleEngine;
+import pt.unl.fct.di.novasys.babel.protocols.overlord.adaptation.RuleEngine;
 import tardis.app.DataDisseminationApp;
 import tardis.management.Controller;
 

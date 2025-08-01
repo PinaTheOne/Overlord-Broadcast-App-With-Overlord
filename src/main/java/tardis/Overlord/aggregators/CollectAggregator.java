@@ -1,4 +1,4 @@
-package tardis.Overlord.utils.aggregators;
+package tardis.Overlord.aggregators;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -6,13 +6,13 @@ import pt.unl.fct.di.novasys.babel.metrics.MetricSample;
 import pt.unl.fct.di.novasys.babel.metrics.Record;
 import pt.unl.fct.di.novasys.babel.metrics.Sample;
 import pt.unl.fct.di.novasys.babel.metrics.monitor.*;
-import tardis.Overlord.OverlordManager;
+import pt.unl.fct.di.novasys.babel.protocols.overlord.OverlordManager;
+import static tardis.Overlord.utils.SerializerMethods.mapOfRecordsFromString;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static tardis.Overlord.utils.DataStructSerializer.mapOfRecordsFromString;
-import static tardis.Overlord.utils.aggregators.NodeAggregator.*;
+import static tardis.Overlord.aggregators.NodeAggregator.*;
 
 public class CollectAggregator extends Aggregation {
 

@@ -8,10 +8,12 @@ import pt.unl.fct.di.novasys.babel.metrics.exporters.CollectOptions;
 import pt.unl.fct.di.novasys.babel.metrics.exporters.ExporterCollectOptions;
 import pt.unl.fct.di.novasys.babel.metrics.exporters.ProtocolCollectOptions;
 import pt.unl.fct.di.novasys.babel.protocols.eagerpush.AdaptiveEagerPushGossipBroadcast;
+import pt.unl.fct.di.novasys.babel.protocols.overlord.OverlordManager;
+import pt.unl.fct.di.novasys.babel.protocols.overlord.OverlordNodeManager;
 import pt.unl.fct.di.novasys.network.data.Host;
-import tardis.Overlord.utils.aggregators.CollectAggregator;
-import tardis.Overlord.utils.aggregators.InNetworkAggregator;
-import tardis.Overlord.utils.aggregators.NodeAggregator;
+import tardis.Overlord.aggregators.CollectAggregator;
+import tardis.Overlord.aggregators.InNetworkAggregator;
+import tardis.Overlord.aggregators.NodeAggregator;
 
 import java.util.HashMap;
 import java.util.List;

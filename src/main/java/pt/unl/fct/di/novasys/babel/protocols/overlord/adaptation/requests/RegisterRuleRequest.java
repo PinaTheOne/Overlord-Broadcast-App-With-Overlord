@@ -1,7 +1,7 @@
-package tardis.Overlord.adaptation.requests;
+package pt.unl.fct.di.novasys.babel.protocols.overlord.adaptation.requests;
 
 import pt.unl.fct.di.novasys.babel.generic.ProtoRequest;
-import tardis.Overlord.adaptation.rules.ProtoRule;
+import pt.unl.fct.di.novasys.babel.protocols.overlord.adaptation.rules.ProtoRule;
 
 public class RegisterRuleRequest extends ProtoRequest {
 

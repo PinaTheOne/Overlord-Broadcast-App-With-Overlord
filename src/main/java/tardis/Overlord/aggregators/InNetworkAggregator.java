@@ -1,4 +1,4 @@
-package tardis.Overlord.utils.aggregators;
+package tardis.Overlord.aggregators;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -11,9 +11,9 @@ import tardis.Overlord.OverlordNode;
 import java.util.HashMap;
 import java.util.Map;
 
-import static tardis.Overlord.utils.DataStructSerializer.mapOfRecordsFromString;
-import static tardis.Overlord.utils.DataStructSerializer.mapOfRecordsToString;
-import static tardis.Overlord.utils.aggregators.NodeAggregator.*;
+import static tardis.Overlord.aggregators.NodeAggregator.*;
+import static tardis.Overlord.utils.SerializerMethods.mapOfRecordsToString;
+import static tardis.Overlord.utils.SerializerMethods.mapOfRecordsFromString;
 
 public class InNetworkAggregator extends Aggregation {
 

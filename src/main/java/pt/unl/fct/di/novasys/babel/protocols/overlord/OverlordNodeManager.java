@@ -1,4 +1,4 @@
-package tardis.Overlord;
+package pt.unl.fct.di.novasys.babel.protocols.overlord;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -16,7 +16,7 @@ import pt.unl.fct.di.novasys.babel.protocols.overlord.moncollect.notifications.C
 import pt.unl.fct.di.novasys.babel.protocols.overlord.moncollect.notifications.ReceiveAggregatedDataNotification;
 import pt.unl.fct.di.novasys.babel.protocols.overlord.moncollect.requests.AggregateDataRequest;
 import pt.unl.fct.di.novasys.babel.protocols.overlord.moncollect.requests.MonitorDataRequest;
-import tardis.Overlord.utils.ReconfigurationsContainer;
+import pt.unl.fct.di.novasys.babel.protocols.overlord.utils.ReconfigurationsContainer;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;

@@ -1,4 +1,4 @@
-package tardis.Overlord.utils.aggregators;
+package tardis.Overlord.aggregators;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -6,11 +6,11 @@ import pt.unl.fct.di.novasys.babel.metrics.*;
 import pt.unl.fct.di.novasys.babel.metrics.Record;
 import pt.unl.fct.di.novasys.babel.metrics.monitor.*;
 import pt.unl.fct.di.novasys.babel.protocols.eagerpush.AdaptiveEagerPushGossipBroadcast;
-import tardis.Overlord.OverlordManager;
+import pt.unl.fct.di.novasys.babel.protocols.overlord.OverlordManager;
 
 import java.util.*;
 
-import static tardis.Overlord.utils.DataStructSerializer.mapOfRecordsToString;
+import static tardis.Overlord.utils.SerializerMethods.mapOfRecordsToString;
 
 /**
  * This class is responsible for aggregation of metrics in one node. it essentially takes in as input
