@@ -53,7 +53,7 @@ public abstract class OverlordManager extends OverlordNodeManager {
                 this.metricCollectionPeriod = Long.parseLong(props.getProperty(PAR_COLLECT_PERIOD));
             else
                 this.metricCollectionPeriod = DEFAULT_COLLECT_PERIOD;
-            logger.debug("  Overlord Trigger Period: {}", this.metricCollectionPeriod);
+            logger.debug("  Overlord trigger period: {}", this.metricCollectionPeriod);
 
             // For selecting if MON-Collect is triggered manually or by a timer
             if((props.containsKey(PAR_COLLECT_TIMER)
@@ -62,9 +62,9 @@ public abstract class OverlordManager extends OverlordNodeManager {
                 registerTimerHandler(TriggerOverlordTimer.TIMER_ID, this::uponOverlordTimer);
                 setupPeriodicTimer(new TriggerOverlordTimer(), this.metricCollectionPeriod, this.metricCollectionPeriod);
             }
-            logger.debug("  Overlord Timed Trigger: {}", props.containsKey(PAR_COLLECT_TIMER) && Boolean.parseBoolean(props.getProperty(PAR_COLLECT_TIMER))  || DEFAULT_COLLECT_TIMER_VALUE);
+            logger.debug("  Overlord timed trigger: {}", props.containsKey(PAR_COLLECT_TIMER) && Boolean.parseBoolean(props.getProperty(PAR_COLLECT_TIMER))  || DEFAULT_COLLECT_TIMER_VALUE);
         } catch (HandlerRegistrationException e){
-            logger.error("Could not Register Handler: {}", e.getMessage());
+            logger.error("Could not register handler: {}", e.getMessage());
         }
 
         /* RULES */
@@ -87,7 +87,7 @@ public abstract class OverlordManager extends OverlordNodeManager {
      * ********************* */
 
     /**
-     * You can instanciate your rules here, put them in a Set and return them.
+     * You can instantiate your rules here, put them in a Set and return them.
      * The rules in the returned set will be registered in the RuleEngine.
      * @return A Set containing the rules you want to be registered in the Rule Engine
      */
@@ -112,13 +112,13 @@ public abstract class OverlordManager extends OverlordNodeManager {
     /* Real Requests - DO NOT TOUCH */
 
     private void uponCollectNotification_real(CollectNotification notification, short protoId) {
-        logger.info("Received Collect Notification from {}.", protoId);
+        logger.info("Received collect notification from {}.", protoId);
         Map<String, NodeSample> samples = deserializeSampleMap(notification.getData());
         if(samples.isEmpty())
-            logger.warn("Collected sample map is empty! Ignoring Notificaiton");
+            logger.warn("Collected sample map is empty! Ignoring notification");
         else {
-            OverlordNodeManager.logNodeSampleMap("Collected Sample Map:", samples);
-            logger.info("Sending Collected Metrics to Rule Engine for Evaluation");
+            OverlordNodeManager.logNodeSampleMap("Collected sample map:", samples);
+            logger.info("Sending collected metrics to rule Engine for evaluation");
             sendRequest(new EvaluateConditionsRequest(uponCollectNotification(samples)), RuleEngine.PROTO_ID);
         }
     }

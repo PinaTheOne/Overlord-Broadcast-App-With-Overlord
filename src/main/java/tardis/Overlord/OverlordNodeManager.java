@@ -7,7 +7,6 @@ import org.apache.logging.log4j.Logger;
 import org.javatuples.Pair;
 import pt.unl.fct.di.novasys.babel.core.adaptive.requests.Reconfigure;
 import pt.unl.fct.di.novasys.babel.exceptions.HandlerRegistrationException;
-import pt.unl.fct.di.novasys.babel.metrics.MetricsManager;
 import pt.unl.fct.di.novasys.babel.metrics.NodeSample;
 import pt.unl.fct.di.novasys.babel.metrics.exporters.ExporterCollectOptions;
 import pt.unl.fct.di.novasys.babel.metrics.exporters.ProtocolExporterHelper;

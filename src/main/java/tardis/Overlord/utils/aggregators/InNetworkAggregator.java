@@ -19,23 +19,24 @@ public class InNetworkAggregator extends Aggregation {
 
 
     public static final Logger logger = LogManager.getLogger(AggregationManager.class);
+    public static final String MESSAGE_RECORDS = "MessageRecords";
     public final static String IN_NETWORK_AGGREGATED_METRICS = "InNetworkAggregatedMetrics";
-    public final static String SENT_MESSAGES = "SentMessages";
-    public final static String RECEIVED_MESSAGES = "ReceivedMessages";
-    public final static String DUPLICATE_MESSAGES = "DuplicateMessages";
-    public final static String DELIVERED_MESSAGES = "DeliveredMessages";
-    public final static String NODE_COUNT = "NodeCount";
+    public final static String SENT_MESSAGES = CollectAggregator.SENT_MESSAGES;
+    public final static String RECEIVED_MESSAGES = CollectAggregator.RECEIVED_MESSAGES;
+    public final static String DUPLICATE_MESSAGES = CollectAggregator.DUPLICATE_MESSAGES;
+    public final static String DELIVERED_MESSAGES = CollectAggregator.DELIVERED_MESSAGES;
+    public final static String NODE_COUNT = CollectAggregator.NODE_COUNT;
 
     private static final MetricIdentifier[] metricsToAggregate = new MetricIdentifier[] {
             new MetricIdentifier(IN_NETWORK_AGGREGATED_METRICS, OverlordNode.PROTO_ID),
     };
-    public static final String MESSAGE_RECORDS = "MessageRecords";
-    private int nodeCount;
+
+    private Map<String, MessageRecord> messageRecords;
     private int sentMessagesAccumulator;
     private int receivedMessagesAccumulator;
     private int duplicatedMessagesAccumulator;
     private int deliveredMessagesAccumulator;
-    private Map<String, MessageRecord> messageRecords;
+    private int nodeCount;
 
     public InNetworkAggregator(){
         super(metricsToAggregate);
@@ -43,12 +44,12 @@ public class InNetworkAggregator extends Aggregation {
     }
 
     private void resetDataStructs() {
-        this.nodeCount = 0;
+        this.messageRecords = new HashMap<>();
         this.sentMessagesAccumulator = 0;
         this.receivedMessagesAccumulator = 0;
         this.duplicatedMessagesAccumulator = 0;
         this.deliveredMessagesAccumulator = 0;
-        this.messageRecords = new HashMap<>();
+        this.nodeCount = 0;
     }
 
     @Override
@@ -106,7 +107,7 @@ public class InNetworkAggregator extends Aggregation {
                 DUPLICATE_MESSAGES,
                 DELIVERED_MESSAGES,
                 NODE_COUNT
-        ).description("Has all the metrics already aggregated")
+        ).description("Has all the metrics already aggregated, ready to be aggregated in the next node")
                 .build();
     }
 }

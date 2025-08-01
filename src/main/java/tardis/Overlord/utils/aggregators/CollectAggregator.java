@@ -24,15 +24,15 @@ public class CollectAggregator extends Aggregation {
     private int deliveredMessagesAccumulator;
     private Map<String, MessageRecord> messageRecords;
     public final static String AGGREGATED_METRICS = "AggregatedMetrics";
-    public final static String AVERAGE_LATENCY = "AverageLatency";
     public final static String SENT_MESSAGES = "SentMessages";
     public final static String RECEIVED_MESSAGES = "ReceivedMessages";
-    private static final String DELIVERED_MESSAGES = "DeliveredMessages";
     public final static String DUPLICATE_MESSAGES = "DuplicateMessages";
+    public static final String DELIVERED_MESSAGES = "DeliveredMessages";
+    public final static String NODE_COUNT = "NodeCount";
+    public final static String AVERAGE_LATENCY = "AverageLatency";
     public final static String AVERAGE_RELIABILITY = "AverageReliability";
     public final static String AVERAGE_RMR = "AverageRMR";
     public final static String AVERAGE_HOP_COUNT = "AverageHopCount";
-    public final static String NODE_COUNT = "NodeCount";
 
     private static final MetricIdentifier[] metricsToAggregate = new MetricIdentifier[] {
             new MetricIdentifier(InNetworkAggregator.IN_NETWORK_AGGREGATED_METRICS, OverlordManager.PROTO_ID)
@@ -80,7 +80,7 @@ public class CollectAggregator extends Aggregation {
         int hopCountAccumulator = 0;
         for(String s : messageRecords.keySet()){
             if(!messageRecords.containsKey(s) && messageRecords.get(s).hasNoCreationValue())
-                System.err.println("Message "+s+" was received but was not created. Ignoring it...");
+                logger.error("Message "+s+" was received but was not created. Ignoring it...");
             else{
                 latencyAccumulator += (messageRecords.get(s).getReceptionTime()-messageRecords.get(s).getCreationTime());
                 hopCountAccumulator += messageRecords.get(s).getHopCount();
@@ -109,22 +109,21 @@ public class CollectAggregator extends Aggregation {
                 String.valueOf(duplicatedMessagesAccumulator),
                 String.valueOf(deliveredMessagesAccumulator),
                 String.valueOf(nodeCount),
-                String.valueOf(reliability),
                 String.valueOf(latency),
+                String.valueOf(reliability),
                 String.valueOf(rmr),
                 String.valueOf(hopCount)
         );
 
-        logger.info("Final Average Latency: {} ms", latency);
-        logger.info("Final Average Reliability: {}", reliability);
-        logger.info("Final Average rmr: {}", rmr);
-        logger.info("Final Average Hop Count: {}", hopCount);
-        logger.info("Final Total Sent Messages: {}", sentMessagesAccumulator);
-        logger.info("Final Total Received Messages: {}", receivedMessagesAccumulator);
-        logger.info("Final Total Delivered Messages: {}", deliveredMessagesAccumulator);
-        logger.info("Final Total Duplicated Messages: {}", duplicatedMessagesAccumulator);
-        logger.info("Final Node Count: {}", nodeCount);
-
+        logger.info("Collected Total Sent Messages: {}", sentMessagesAccumulator);
+        logger.info("Collected Total Received Messages: {}", receivedMessagesAccumulator);
+        logger.info("Collected Total Duplicated Messages: {}", duplicatedMessagesAccumulator);
+        logger.info("Collected Total Delivered Messages: {}", deliveredMessagesAccumulator);
+        logger.info("Collected Node Count: {}", nodeCount);
+        logger.info("Collected Average Latency: {} ms", latency);
+        logger.info("Collected Average Reliability: {}", reliability);
+        logger.info("Collected Average rmr: {}", rmr);
+        logger.info("Collected Average Hop Count: {}", hopCount);
         ar.addGlobalMetricToSample(aggregatedMetrics, OverlordManager.PROTO_ID);
     }
 
@@ -135,11 +134,11 @@ public class CollectAggregator extends Aggregation {
                 DUPLICATE_MESSAGES,
                 DELIVERED_MESSAGES,
                 NODE_COUNT,
-                AVERAGE_RELIABILITY,
                 AVERAGE_LATENCY,
+                AVERAGE_RELIABILITY,
                 AVERAGE_RMR,
                 AVERAGE_HOP_COUNT
-        ).description("Has all the metrics already aggregated")
+        ).description("Has all the metrics already aggregated ready to be used for evaluation")
                 .build();
     }
 
