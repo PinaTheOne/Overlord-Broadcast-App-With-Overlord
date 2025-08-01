@@ -20,7 +20,8 @@ public class NetworkReconfigure implements Serializable {
         this.config = config;
     }
 
-    public Map<String, ? extends Serializable> getConfig() {
+    @SuppressWarnings("unused") // TODO: Check
+    public Map<String, ? extends Serializable> getConfigMap() {
         return config;
     }
 

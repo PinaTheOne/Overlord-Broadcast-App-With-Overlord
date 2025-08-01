@@ -1,20 +1,22 @@
 package tardis.Overlord.adaptation.requests;
 
 import pt.unl.fct.di.novasys.babel.generic.ProtoRequest;
-import tardis.Overlord.utils.AggregatedStatistics;
+import pt.unl.fct.di.novasys.babel.metrics.NodeSample;
+
+import java.util.Map;
 
 public class EvaluateConditionsRequest extends ProtoRequest {
 
     public static final short REQUEST_ID = 1211;
 
-    private final AggregatedStatistics stats;
+    private final Map<String, NodeSample> samples;
 
-    public EvaluateConditionsRequest(AggregatedStatistics stats){
+    public EvaluateConditionsRequest(Map<String, NodeSample> samples){
         super(REQUEST_ID);
-        this.stats = stats;
+        this.samples = samples;
     }
 
-    public AggregatedStatistics getStats(){
-        return this.stats;
+    public Map<String, NodeSample> getSamples(){
+        return this.samples;
     }
 }

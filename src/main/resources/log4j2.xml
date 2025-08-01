@@ -2,9 +2,13 @@
 
 <Configuration status="INFO">
 	<Appenders>
-		<Console name="console" target="SYSTEM_OUT">
+		<!--<Console name="console" target="SYSTEM_OUT">
 			<PatternLayout
 				pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
+		</Console>-->
+		<Console name="console" target="SYSTEM_OUT">
+			<PatternLayout
+					pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level - %msg%n" />
 		</Console>
 		<File name="filelog" fileName="${hostName}-general.log"
 			immediateFlush="false" append="false">
@@ -23,12 +27,10 @@
 			immediateFlush="true" append="true">
 			<PatternLayout pattern="%d{UNIX_MILLIS} %msg%n" />
 		</File>
-		<!-- 
 		<File name="channels" fileName="${hostName}-channels-trace.log" immediateFlush="false" 
 			append="false"> <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] 
 			%-5level %logger{36} - %msg%n"/> 
 		</File>
-		-->
 	</Appenders>
 
 	<Loggers>
@@ -73,8 +75,8 @@
 			<AppenderRef ref="channels" /> 
 		</Logger>
 		 -->
-		<Logger name="pt.unl.fct.di.novasys.babel.protocols.eagerpush"
-			level="debug" additivity="false">
+		<Logger name="pt.unl.fct.di.novasys.babel.protocols.eagerpush.AdaptiveEagerPushGossipBroadcast"
+			level="error" additivity="false">
 			<AppenderRef ref="console" />
 		</Logger>
 		<Logger name="Overlord.adaptation"
@@ -89,8 +91,12 @@
 			level="error" additivity="false">
 			<AppenderRef ref="console" />
 		</Logger>
-		<Logger name="pt.unl.fct.di.novasys.babel.core" level="error"
-			additivity="false">
+		<Logger name="pt.unl.fct.di.novasys.babel.core"
+				level="error" additivity="false">
+			<AppenderRef ref="console" />
+		</Logger>
+		<Logger name="pt.unl.fct.di.novasys.babel.metrics.monitor.AggregationManager"
+				level="debug" additivity="false">
 			<AppenderRef ref="console" />
 		</Logger>
 		<Root level="info">

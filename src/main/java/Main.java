@@ -9,7 +9,6 @@ import org.apache.logging.log4j.Logger;
 
 import pt.unl.fct.di.novasys.babel.core.Babel;
 import pt.unl.fct.di.novasys.babel.core.GenericProtocol;
-import pt.unl.fct.di.novasys.babel.metrics.exporters.ExporterCollectOptions;
 import pt.unl.fct.di.novasys.babel.protocols.eagerpush.AdaptiveEagerPushGossipBroadcast;
 import pt.unl.fct.di.novasys.babel.protocols.hyparview.HyParView;
 import pt.unl.fct.di.novasys.babel.protocols.overlord.moncollect.MonCollect;
@@ -59,7 +58,7 @@ public class Main {
 
 		String address = null;
 
-		boolean overlord = props.containsKey("Overlord") && Boolean.parseBoolean(props.getProperty("Overlord"));
+		boolean overlord = props.containsKey(OverlordManager.IS_OVERLORD) && Boolean.parseBoolean(props.getProperty(OverlordManager.IS_OVERLORD));
 
 
 		if (props.containsKey(Babel.PAR_DEFAULT_INTERFACE))
@@ -103,10 +102,6 @@ public class Main {
 			System.exit(1);
 		}
 
-		ExporterCollectOptions options = new ExporterCollectOptions.Builder()
-				.protocolsToCollect(AdaptiveEagerPushGossipBroadcast.PROTOCOL_ID)
-				.protocolsToCollect(OverlordManager.PROTO_ID)
-				.build();
 
 		//Record exporter exports metrics to the monitor host (there is only one metrics monitor)
 		VisualizationProtocol visualizationProtocol = null;
@@ -168,7 +163,7 @@ public class Main {
 
 		babel.start();
 
-		if (props.containsKey("Overlord") && Boolean.parseBoolean(props.getProperty("Overlord"))) {
+		if (overlord) {
 			System.out.println("System is running as OVERLORD.");
 			//commandInput(overlordManager);
 		} else {

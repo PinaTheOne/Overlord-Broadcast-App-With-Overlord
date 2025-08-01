@@ -2,9 +2,10 @@ package tardis.Overlord.adaptation.rules;
 
 import org.javatuples.Pair;
 import pt.unl.fct.di.novasys.babel.core.adaptive.requests.Reconfigure;
-import tardis.Overlord.utils.AggregatedStatistics;
+import pt.unl.fct.di.novasys.babel.metrics.NodeSample;
 
 import java.util.List;
+import java.util.Map;
 
 public abstract class ProtoRule {
 
@@ -24,8 +25,9 @@ public abstract class ProtoRule {
     public String getName(){ return this.name; }
     public String getDescription(){ return this.description; }
 
-    public abstract List<Pair<Reconfigure, Short>> evaluate(AggregatedStatistics metrics);
+    public abstract List<Pair<Reconfigure, Short>> evaluate(Map<String, NodeSample> samples);
 
     public String toString(){return String.format("(%d) %s - %s;", getId(), getName(), getDescription());}
+
 
 }

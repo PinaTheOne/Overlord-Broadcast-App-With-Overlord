@@ -11,14 +11,9 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>pt.unl.fct.di.novasys.babel.protocols</groupId>
-			<artifactId>Mon-Collect</artifactId>
-			<version>0.2-SNAPSHOT</version>
-		</dependency>
-		<dependency>
 			<groupId>pt.unl.fct.di.novasys.babel</groupId>
 			<artifactId>babel-sc-core</artifactId>
-			<version>[0.5.0,)</version>
+			<version>[0.7.4,)</version>
 		</dependency>
 		<dependency>
 			<groupId>pt.unl.fct.di.novasys.babel.utils</groupId>
@@ -35,11 +30,11 @@
 			<artifactId>reconfiguration-protocol-monitor-j21</artifactId>
 			<version>[0.1.1,)</version>
 		</dependency>
-		<dependency>
+		<!--<dependency>
 			<groupId>pt.unl.fct.di.novasys.babel</groupId>
 			<artifactId>babel-protocol-adaptive-eagerpushgossip</artifactId>
 			<version>[0.2.1,)</version>
-		</dependency>
+		</dependency>-->
 		<dependency>
 			<groupId>pt.unl.fct.di.novasys.babel</groupId>
 			<artifactId>record-exporter-protocol</artifactId>
@@ -49,6 +44,11 @@
 			<groupId>pt.unl.fct.di.novasys.babel</groupId>
 			<artifactId>hyparview-discovery</artifactId>
 			<version>0.1.20</version>
+		</dependency>
+		<dependency>
+			<groupId>pt.unl.fct.di.novasys.babel.protocols</groupId>
+			<artifactId>Mon-Collect</artifactId>
+			<version>0.4.4-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.zeromq</groupId>

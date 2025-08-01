@@ -6,6 +6,7 @@ import org.javatuples.Pair;
 import pt.unl.fct.di.novasys.babel.core.GenericProtocol;
 import pt.unl.fct.di.novasys.babel.core.adaptive.requests.Reconfigure;
 import pt.unl.fct.di.novasys.babel.exceptions.HandlerRegistrationException;
+import pt.unl.fct.di.novasys.babel.metrics.NodeSample;
 import pt.unl.fct.di.novasys.babel.protocols.dissemination.requests.BroadcastRequest;
 import pt.unl.fct.di.novasys.babel.protocols.eagerpush.AdaptiveEagerPushGossipBroadcast;
 import pt.unl.fct.di.novasys.network.data.Host;
@@ -14,7 +15,6 @@ import tardis.Overlord.adaptation.requests.EvaluateConditionsRequest;
 import tardis.Overlord.adaptation.requests.RegisterRuleRequest;
 import tardis.Overlord.adaptation.requests.UnregisterRuleRequest;
 import tardis.Overlord.adaptation.rules.ProtoRule;
-import tardis.Overlord.utils.AggregatedStatistics;
 import tardis.Overlord.utils.ReconfigurationsContainer;
 import java.util.*;
 
@@ -23,7 +23,7 @@ public class RuleEngine extends GenericProtocol {
     public static final String PROTO_NAME = "Rule Engine";
     public static final short PROTO_ID = 1200;
 
-    public static final Logger logger = LogManager.getLogger(OverlordManager.class);
+    public static final Logger logger = LogManager.getLogger(RuleEngine.class);
 
     private final Map<Short, ProtoRule> registeredRules;
     private final Host myself;
@@ -63,7 +63,7 @@ public class RuleEngine extends GenericProtocol {
 
     private void uponEvaluateConditionsRequest(EvaluateConditionsRequest req, short protoID) {
         logger.info("Received EvaluateConditionsRequest from protocol {}", protoID);
-        evaluateRules(req.getStats());
+        evaluateRules(req.getSamples());
     }
 
     private void sendRuleBroadcastRequest(List<Pair<Reconfigure, Short>> reconfigurations) {
@@ -75,7 +75,7 @@ public class RuleEngine extends GenericProtocol {
      * ---- Rule Handling ---
      * ---------------------- */
 
-    private void evaluateRules(AggregatedStatistics stats) {
+    private void evaluateRules(Map<String, NodeSample> stats) {
         logger.info("Received an Evaluate Rules Request, proceeding with evaluation.");
         if (logger.isDebugEnabled()) {
             logger.debug("Registered Rules are:");

@@ -20,7 +20,8 @@ public class ReconfigurationsContainer {
         this.reconfigurations = recs;
     }
 
-    @SuppressWarnings("unused") // TODO: Check
+    // TODO: Check
+    @SuppressWarnings("unused")
     public List<Pair<Reconfigure, Short>> getReconfigurations(){
         List<Pair<Reconfigure, Short>> recs = new LinkedList<>();
         for(Pair<NetworkReconfigure, Short> pair : reconfigurations)
@@ -29,14 +30,14 @@ public class ReconfigurationsContainer {
     }
 
     public static byte[] toByteArray(ReconfigurationsContainer container){
-        try (ByteArrayOutputStream baos = new ByteArrayOutputStream(); ObjectOutputStream oos = new ObjectOutputStream(baos)) {
-            oos.writeInt(container.reconfigurations.size()); // Write number of pairs
+        try (ByteArrayOutputStream out = new ByteArrayOutputStream(); ObjectOutputStream oos = new ObjectOutputStream(out)) {
+            oos.writeInt(container.reconfigurations.size());    // Write number of pairs
             for (Pair<NetworkReconfigure, Short> pair : container.reconfigurations) {
-                oos.writeObject(pair.getValue0());   // Serialize Reconfigure object
-                oos.writeShort(pair.getValue1());  // Write the short
+                oos.writeObject(pair.getValue0());              // Serialize Reconfigure object
+                oos.writeShort(pair.getValue1());               // Write the short
             }
             oos.flush();
-            return baos.toByteArray();
+            return out.toByteArray();
 
         } catch (Exception e) {
             OverlordManager.logger.error("Couldn't Deserialize: {}", e.getMessage());
@@ -50,14 +51,14 @@ public class ReconfigurationsContainer {
         List<Pair<Reconfigure, Short>> result = new ArrayList<>();
 
         try (
-            ByteArrayInputStream bais = new ByteArrayInputStream(data);
-            ObjectInputStream ois = new ObjectInputStream(bais)) {
-            int size = ois.readInt(); // Read the number of pairs
+            ByteArrayInputStream inStream = new ByteArrayInputStream(data);
+            ObjectInputStream in = new ObjectInputStream(inStream)) {
+            int size = in.readInt(); // Read the number of pairs
 
             for (int i = 0; i < size; i++) {
-                Reconfigure reconfig = ((NetworkReconfigure) ois.readObject()).toReconfigure(); // Deserialize Reconfigure
-                short value = ois.readShort();                         // Read short value
-                result.add(new Pair<>(reconfig, value));
+                Reconfigure reconfigure = ((NetworkReconfigure) in.readObject()).toReconfigure(); // Deserialize Reconfigure
+                short value = in.readShort();                                                     // Read short value
+                result.add(new Pair<>(reconfigure, value));
             }
         }
         return result;
