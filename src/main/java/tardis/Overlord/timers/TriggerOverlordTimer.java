@@ -2,11 +2,11 @@ package tardis.Overlord.timers;
 
 import pt.unl.fct.di.novasys.babel.generic.ProtoTimer;
 
-public class GetMetricsTimer extends ProtoTimer {
+public class TriggerOverlordTimer extends ProtoTimer {
 
     public static final short TIMER_ID = 1100;
 
-    public GetMetricsTimer() {
+    public TriggerOverlordTimer() {
         super(TIMER_ID);
     }
 

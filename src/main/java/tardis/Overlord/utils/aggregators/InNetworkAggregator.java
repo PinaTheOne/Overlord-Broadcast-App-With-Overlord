@@ -6,7 +6,7 @@ import pt.unl.fct.di.novasys.babel.metrics.MetricSample;
 import pt.unl.fct.di.novasys.babel.metrics.Record;
 import pt.unl.fct.di.novasys.babel.metrics.Sample;
 import pt.unl.fct.di.novasys.babel.metrics.monitor.*;
-import tardis.Overlord.OverlordManager;
+import tardis.Overlord.OverlordNode;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,7 +27,7 @@ public class InNetworkAggregator extends Aggregation {
     public final static String NODE_COUNT = "NodeCount";
 
     private static final MetricIdentifier[] metricsToAggregate = new MetricIdentifier[] {
-            new MetricIdentifier(IN_NETWORK_AGGREGATED_METRICS, OverlordManager.PROTO_ID),
+            new MetricIdentifier(IN_NETWORK_AGGREGATED_METRICS, OverlordNode.PROTO_ID),
     };
     public static final String MESSAGE_RECORDS = "MessageRecords";
     private int nodeCount;
@@ -54,7 +54,7 @@ public class InNetworkAggregator extends Aggregation {
     @Override
     public AggregationResult aggregate(AggregationInput ai, AggregationResult ar) {
         resetDataStructs();
-        for(MetricSample s : ai.getSamples(OverlordManager.PROTO_ID, IN_NETWORK_AGGREGATED_METRICS))
+        for(MetricSample s : ai.getSamples(OverlordNode.PROTO_ID, IN_NETWORK_AGGREGATED_METRICS))
             this.addNode(s);
         if(this.nodeCount > 0)
             processStatistics(ar);
@@ -78,7 +78,7 @@ public class InNetworkAggregator extends Aggregation {
         logger.info("InNetwork Total Delivered Messages: {}", deliveredMessagesAccumulator);
         logger.info("InNetwork Node Count: {}", nodeCount);
 
-        ar.addGlobalMetricToSample(aggregatedMetrics, OverlordManager.PROTO_ID);
+        ar.addGlobalMetricToSample(aggregatedMetrics, OverlordNode.PROTO_ID);
     }
 
     private void addNode(MetricSample metricSample) {

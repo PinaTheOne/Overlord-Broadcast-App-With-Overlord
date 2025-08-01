@@ -17,7 +17,9 @@ import pt.unl.fct.di.novasys.babel.utils.memebership.monitor.AdaptiveReconfigura
 import pt.unl.fct.di.novasys.babel.utils.memebership.monitor.MembershipMonitor;
 import pt.unl.fct.di.novasys.babel.utils.visualization.VisualizationProtocol;
 import pt.unl.fct.di.novasys.network.data.Host;
+import tardis.Overlord.Overlord;
 import tardis.Overlord.OverlordManager;
+import tardis.Overlord.OverlordNode;
 import tardis.Overlord.adaptation.RuleEngine;
 import tardis.app.DataDisseminationApp;
 import tardis.management.Controller;
@@ -58,7 +60,7 @@ public class Main {
 
 		String address = null;
 
-		boolean overlord = props.containsKey(OverlordManager.IS_OVERLORD) && Boolean.parseBoolean(props.getProperty(OverlordManager.IS_OVERLORD));
+		boolean overlord = props.containsKey(OverlordManager.PAR_IS_OVERLORD) && Boolean.parseBoolean(props.getProperty(OverlordManager.PAR_IS_OVERLORD));
 
 
 		if (props.containsKey(Babel.PAR_DEFAULT_INTERFACE))
@@ -113,7 +115,8 @@ public class Main {
 		//************** MON-COLLECT - OVERLORD MANAGER - RULE ENGINE **************
 
 		MonCollect monCollect = null;
-		OverlordManager overlordManager = null;
+		Overlord overlordClass = null;
+		OverlordNode overlordNode = null;
 		RuleEngine ruleEngine = null;
 
 		if (props.containsKey("MON-Collect.Channel.port")) {
@@ -123,9 +126,12 @@ public class Main {
 
 			Host monCollectHost = new Host(h.getAddress(), moncollectPort);
 			monCollect = new MonCollect(monCollectHost, OverlordManager.PROTO_ID);
-			overlordManager = new OverlordManager(h, MonCollect.PROTO_ID, AdaptiveEagerPushGossipBroadcast.PROTOCOL_ID); // TODO: Mudar isto;
-			if (overlord)
+			if (overlord) {
+				overlordClass = new Overlord(h, MonCollect.PROTO_ID, AdaptiveEagerPushGossipBroadcast.PROTOCOL_ID);
 				ruleEngine = new RuleEngine(h);
+			} else {
+				overlordNode = new OverlordNode(h, MonCollect.PROTO_ID);
+			}
 		}
 		//**************************************************************************
 
@@ -143,7 +149,8 @@ public class Main {
 		protocols.add(visualizationProtocol);
 		protocols.add(app);
 		protocols.add(monCollect);
-		protocols.add(overlordManager);
+		protocols.add(overlordClass);
+		protocols.add(overlordNode);
 		protocols.add(ruleEngine);
 
 

@@ -64,6 +64,11 @@
 				additivity="false">
 			<AppenderRef ref="console" />
 		</Logger>
+		<Logger name="tardis.Overlord.OverlordNodeManager"
+				level="debug"
+				additivity="false">
+			<AppenderRef ref="console" />
+		</Logger>
 		<Logger name="tardis.Overlord.adaptation.RuleEngine"
 				level="debug"
 				additivity="false">

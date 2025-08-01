@@ -2,7 +2,7 @@ package tardis.Overlord.utils;
 
 import org.javatuples.Pair;
 import pt.unl.fct.di.novasys.babel.core.adaptive.requests.Reconfigure;
-import tardis.Overlord.OverlordManager;
+import tardis.Overlord.Overlord;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -40,8 +40,8 @@ public class ReconfigurationsContainer {
             return out.toByteArray();
 
         } catch (Exception e) {
-            OverlordManager.logger.error("Couldn't Deserialize: {}", e.getMessage());
-            OverlordManager.logger.error("{}", (Object) e.getStackTrace());
+            Overlord.logger.error("Couldn't Deserialize: {}", e.getMessage());
+            Overlord.logger.error("{}", (Object) e.getStackTrace());
             System.exit(-1);
         }
         return null;

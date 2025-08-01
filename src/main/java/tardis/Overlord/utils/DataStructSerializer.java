@@ -1,12 +1,9 @@
 package tardis.Overlord.utils;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
+
 import org.slf4j.Logger;
-import pt.unl.fct.di.novasys.babel.metrics.NodeSample;
 import tardis.Overlord.utils.aggregators.NodeAggregator.MessageRecord;
 
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class DataStructSerializer {
@@ -15,43 +12,8 @@ public class DataStructSerializer {
      * **** SERIALIZERS **** *
      * ********************* */
 
-    /* ***************************** *
-     * ******** SAMPLE MAPS ******** *
-     * ***************************** */
 
-    public static byte[] serializeSampleMap(Map<String, NodeSample> aggregatedData) {
-        ByteBuf out = Unpooled.buffer();
-        out.writeInt(aggregatedData.size());
-        for(String h : aggregatedData.keySet()){
-            byte[] strBytes = h.getBytes(StandardCharsets.UTF_8);
-            out.writeInt(strBytes.length);
-            out.writeBytes(strBytes);
-            byte[] arr = aggregatedData.get(h).toByteArray();
-            out.writeInt(arr.length);
-            out.writeBytes(arr);
-        }
-        return out.array();
-    }
-
-    public static Map<String, NodeSample> deserializeSampleMap(byte[] b) {
-        ByteBuf in = Unpooled.wrappedBuffer(b);
-        Map<String, NodeSample> map = new HashMap<>();
-        int size = in.readInt();
-        for(int i = 0; i < size; i++){
-            byte[] stringBytes = new byte[in.readInt()];
-            in.readBytes(stringBytes);
-            String h    = new String(stringBytes, StandardCharsets.UTF_8);
-            byte[] bytes = new byte[in.readInt()];
-            in.readBytes(bytes);
-            NodeSample data = NodeSample.fromByteArray(bytes);
-            map.put(h, data);
-        }
-        return map;
-    }
-
-    /* ***************************** *
-     * ******** RECORD MAPS ******** *
-     * ***************************** */
+    /* ******** RECORD MAPS ******** */
     public static String mapOfRecordsToString(Map<String, MessageRecord> map){
         StringBuilder str = new StringBuilder();
         str.append(map.size());

@@ -47,9 +47,9 @@ public class RuleEngine extends GenericProtocol {
         // Nothing yet
     }
 
-    /* ----------------------
-     * ------ Requests ------
-     * ---------------------- */
+    /* ********************* *
+     * ****** REQUESTS ***** *
+     * ********************* */
 
     private void uponRegisterRuleRequest(RegisterRuleRequest req, short protoID) {
         logger.info("Received RegisterRuleRequest from protocol {}", protoID);
@@ -66,14 +66,18 @@ public class RuleEngine extends GenericProtocol {
         evaluateRules(req.getSamples());
     }
 
+    /* **************************************** *
+     * ****** RECONFIGURATIONS BROADCAST ****** *
+     * **************************************** */
+
     private void sendRuleBroadcastRequest(List<Pair<Reconfigure, Short>> reconfigurations) {
         ReconfigurationsContainer container = new ReconfigurationsContainer(reconfigurations);
         sendRequest(new BroadcastRequest(myself, ReconfigurationsContainer.toByteArray(container), OverlordManager.PROTO_ID), AdaptiveEagerPushGossipBroadcast.PROTOCOL_ID);
     }
 
-    /* ----------------------
-     * ---- Rule Handling ---
-     * ---------------------- */
+    /* ********************* *
+     * ** RULE EVALUATION ** *
+     * ********************* */
 
     private void evaluateRules(Map<String, NodeSample> stats) {
         logger.info("Received an Evaluate Rules Request, proceeding with evaluation.");
@@ -108,6 +112,10 @@ public class RuleEngine extends GenericProtocol {
         }
         sendRuleBroadcastRequest(fullReconfigurations);
     }
+
+    /* ********************* *
+     * * RULE REGISTRATION * *
+     * ********************* */
 
     private void registerRule(ProtoRule rule) {
         logger.debug("Registering Rule {}", rule.toString());
