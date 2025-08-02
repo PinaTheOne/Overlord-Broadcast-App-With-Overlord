@@ -7,7 +7,7 @@ import pt.unl.fct.di.novasys.babel.metrics.NodeSample;
 import pt.unl.fct.di.novasys.babel.metrics.exporters.CollectOptions;
 import pt.unl.fct.di.novasys.babel.metrics.exporters.ExporterCollectOptions;
 import pt.unl.fct.di.novasys.babel.metrics.exporters.ProtocolCollectOptions;
-import pt.unl.fct.di.novasys.babel.protocols.eagerpush.AdaptiveEagerPushGossipBroadcast;
+import pt.unl.fct.di.novasys.babel.protocols.eagerpush.OverlordAdaptiveEagerPushGossipBroadcast;
 import pt.unl.fct.di.novasys.babel.protocols.overlord.OverlordManager;
 import pt.unl.fct.di.novasys.babel.protocols.overlord.OverlordNodeManager;
 import pt.unl.fct.di.novasys.network.data.Host;
@@ -75,7 +75,7 @@ public class OverlordNode extends OverlordNodeManager {
         broadcastOptions.addCollectOptions(NodeAggregator.SENT_MESSAGES_RECORD, new CollectOptions(true));
         broadcastOptions.addCollectOptions(NodeAggregator.RECEIVE_MESSAGES_RECORD, new CollectOptions(true));
         broadcastOptions.addCollectOptions(NodeAggregator.DELIVERED_MESSAGES_RECORD, new CollectOptions(true));
-        ops.put(AdaptiveEagerPushGossipBroadcast.PROTOCOL_ID, broadcastOptions);
+        ops.put(OverlordAdaptiveEagerPushGossipBroadcast.PROTOCOL_ID, broadcastOptions);
         return ops;
     }
 }

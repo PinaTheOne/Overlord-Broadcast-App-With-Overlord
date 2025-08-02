@@ -5,7 +5,7 @@ import org.apache.logging.log4j.Logger;
 import pt.unl.fct.di.novasys.babel.metrics.*;
 import pt.unl.fct.di.novasys.babel.metrics.Record;
 import pt.unl.fct.di.novasys.babel.metrics.monitor.*;
-import pt.unl.fct.di.novasys.babel.protocols.eagerpush.AdaptiveEagerPushGossipBroadcast;
+import pt.unl.fct.di.novasys.babel.protocols.eagerpush.OverlordAdaptiveEagerPushGossipBroadcast;
 import pt.unl.fct.di.novasys.babel.protocols.overlord.OverlordManager;
 
 import java.util.*;
@@ -35,10 +35,10 @@ public class NodeAggregator extends Aggregation {
     String myself;
 
     // Metrics Names
-    public final static String SENT_MESSAGES_RECORD = AdaptiveEagerPushGossipBroadcast.SENT_MESSAGES_RECORD;
-    public final static String RECEIVE_MESSAGES_RECORD = AdaptiveEagerPushGossipBroadcast.RECEIVE_MESSAGES_RECORD;
-    public final static String DELIVERED_MESSAGES_RECORD  = AdaptiveEagerPushGossipBroadcast.DELIVERED_MESSAGES_RECORD;
-    public final static short BCAST_PROTO_ID = AdaptiveEagerPushGossipBroadcast.PROTOCOL_ID;
+    public final static String SENT_MESSAGES_RECORD = OverlordAdaptiveEagerPushGossipBroadcast.SENT_MESSAGES_RECORD;
+    public final static String RECEIVE_MESSAGES_RECORD = OverlordAdaptiveEagerPushGossipBroadcast.RECEIVE_MESSAGES_RECORD;
+    public final static String DELIVERED_MESSAGES_RECORD  = OverlordAdaptiveEagerPushGossipBroadcast.DELIVERED_MESSAGES_RECORD;
+    public final static short BCAST_PROTO_ID = OverlordAdaptiveEagerPushGossipBroadcast.PROTOCOL_ID;
     public static final Logger logger = LogManager.getLogger(AggregationManager.class);
 
     private static final MetricIdentifier[] metricsToAggregate = new MetricIdentifier[] {

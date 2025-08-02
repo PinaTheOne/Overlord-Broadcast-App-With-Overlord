@@ -80,7 +80,7 @@
 			<AppenderRef ref="channels" /> 
 		</Logger>
 		 -->
-		<Logger name="pt.unl.fct.di.novasys.babel.protocols.eagerpush.AdaptiveEagerPushGossipBroadcast"
+		<Logger name="pt.unl.fct.di.novasys.babel.protocols.eagerpush.OverlordAdaptiveEagerPushGossipBroadcast"
 			level="error" additivity="false">
 			<AppenderRef ref="console" />
 		</Logger>

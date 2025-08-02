@@ -9,7 +9,7 @@ import org.apache.logging.log4j.Logger;
 
 import pt.unl.fct.di.novasys.babel.core.Babel;
 import pt.unl.fct.di.novasys.babel.core.GenericProtocol;
-import pt.unl.fct.di.novasys.babel.protocols.eagerpush.AdaptiveEagerPushGossipBroadcast;
+import pt.unl.fct.di.novasys.babel.protocols.eagerpush.OverlordAdaptiveEagerPushGossipBroadcast;
 import pt.unl.fct.di.novasys.babel.protocols.hyparview.HyParView;
 import pt.unl.fct.di.novasys.babel.protocols.overlord.moncollect.MonCollect;
 import pt.unl.fct.di.novasys.babel.utils.NetworkingUtilities;
@@ -92,7 +92,7 @@ public class Main {
 		AdaptiveReconfigurationMonitor arm = new AdaptiveReconfigurationMonitor();
 
 		Host gossipHost = new Host(h.getAddress(), h.getPort() + 1);
-		AdaptiveEagerPushGossipBroadcast bcast = new AdaptiveEagerPushGossipBroadcast("channel.gossip", props,
+		OverlordAdaptiveEagerPushGossipBroadcast bcast = new OverlordAdaptiveEagerPushGossipBroadcast("channel.gossip", props,
 				gossipHost);
 
 		Controller controller = new Controller(h);
@@ -127,8 +127,8 @@ public class Main {
 			Host monCollectHost = new Host(h.getAddress(), moncollectPort);
 			monCollect = new MonCollect(monCollectHost, OverlordManager.PROTO_ID);
 			if (overlord) {
-				overlordClass = new Overlord(h, MonCollect.PROTO_ID, AdaptiveEagerPushGossipBroadcast.PROTOCOL_ID);
-				ruleEngine = new RuleEngine(h, AdaptiveEagerPushGossipBroadcast.PROTOCOL_ID);
+				overlordClass = new Overlord(h, MonCollect.PROTO_ID, OverlordAdaptiveEagerPushGossipBroadcast.PROTOCOL_ID);
+				ruleEngine = new RuleEngine(h, OverlordAdaptiveEagerPushGossipBroadcast.PROTOCOL_ID);
 			} else {
 				overlordNode = new OverlordNode(h, MonCollect.PROTO_ID);
 			}
@@ -137,7 +137,7 @@ public class Main {
 
 		// Solve the dependency between the data dissemination app and the broadcast
 		// protocol if omitted from the config
-		props.putIfAbsent(DataDisseminationApp.PAR_BCAST_PROTOCOL_ID, AdaptiveEagerPushGossipBroadcast.PROTOCOL_ID + "");
+		props.putIfAbsent(DataDisseminationApp.PAR_BCAST_PROTOCOL_ID, OverlordAdaptiveEagerPushGossipBroadcast.PROTOCOL_ID + "");
 
 		List<GenericProtocol> protocols = new LinkedList<>();
 		protocols.add(membershipProtocol);

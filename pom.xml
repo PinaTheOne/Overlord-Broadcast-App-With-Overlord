@@ -30,11 +30,11 @@
 			<artifactId>reconfiguration-protocol-monitor-j21</artifactId>
 			<version>[0.1.1,)</version>
 		</dependency>
-		<!--<dependency>
-			<groupId>pt.unl.fct.di.novasys.babel</groupId>
-			<artifactId>babel-protocol-adaptive-eagerpushgossip</artifactId>
-			<version>[0.2.1,)</version>
-		</dependency>-->
+		<dependency>
+			<groupId>pt.unl.fct.di.novasys.babel.protocols</groupId>
+    		<artifactId>OverlordAdaptiveEagerPushGossipBroadcast</artifactId>
+    		<version>1.1</version>
+		</dependency>
 		<dependency>
 			<groupId>pt.unl.fct.di.novasys.babel</groupId>
 			<artifactId>record-exporter-protocol</artifactId>

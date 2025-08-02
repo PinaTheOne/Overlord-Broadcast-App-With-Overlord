@@ -10,7 +10,7 @@ import pt.unl.fct.di.novasys.babel.core.adaptive.AdaptiveMembershipProtocol;
 import pt.unl.fct.di.novasys.babel.core.adaptive.requests.GetAdaptiveFieldsReply;
 import pt.unl.fct.di.novasys.babel.core.adaptive.requests.GetAdaptiveFieldsRequest;
 import pt.unl.fct.di.novasys.babel.exceptions.HandlerRegistrationException;
-import pt.unl.fct.di.novasys.babel.protocols.eagerpush.AdaptiveEagerPushGossipBroadcast;
+import pt.unl.fct.di.novasys.babel.protocols.eagerpush.OverlordAdaptiveEagerPushGossipBroadcast;
 import pt.unl.fct.di.novasys.network.data.Host;
 
 public class Controller extends GenericProtocol {
@@ -55,8 +55,8 @@ public class Controller extends GenericProtocol {
 
         /* Broadcast Fannout (tries to retrieve it, if it can't, will use the default value) */
 
-        this.broadcastFanout = Integer.parseInt(props.getProperty(AdaptiveEagerPushGossipBroadcast.PAR_FANOUT,
-                AdaptiveEagerPushGossipBroadcast.DEFAULT_FANOUT));
+        this.broadcastFanout = Integer.parseInt(props.getProperty(OverlordAdaptiveEagerPushGossipBroadcast.PAR_FANOUT,
+                OverlordAdaptiveEagerPushGossipBroadcast.DEFAULT_FANOUT));
 
         logger.debug("Requesting adaptive fields to {} and {}", membershipProtocolID, broadcastProtocolID);
 
